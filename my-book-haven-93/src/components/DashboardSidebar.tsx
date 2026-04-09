@@ -10,19 +10,19 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { NavLink } from "@/components/NavLink";
 
 const mainItems = [
-  { icon: LayoutDashboard, label: "Dashboard", active: true },
-  { icon: BookOpen, label: "Browse Books" },
-  { icon: BookCheck, label: "Issued Books" },
-  { icon: Clock, label: "Return Deadlines" },
-  { icon: Monitor, label: "Online Reading" },
-  { icon: ShoppingCart, label: "My Purchases" },
+  { icon: LayoutDashboard, label: "Dashboard", to: "/index" },
+  { icon: BookCheck, label: "Issued Books", to: "/issued" },
+  { icon: Clock, label: "Return Deadlines", to: "/return-deadline" },
+  { icon: Monitor, label: "Online Reading", to: "/online-read" },
+  { icon: ShoppingCart, label: "My Purchases", to: "/purchase" },
 ];
 
 const toolItems = [
-  { icon: Settings, label: "Settings" },
-  { icon: LogOut, label: "Logout" },
+  { icon: Settings, label: "Settings", to: "/settings" },
+  { icon: LogOut, label: "Logout", to: "/logout" },
 ];
 
 const DashboardSidebar = () => {
@@ -50,32 +50,21 @@ const DashboardSidebar = () => {
           Menu
         </p>
         {mainItems.map((item) => (
-          <button
+          <NavLink
             key={item.label}
-            className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 relative ${
-              item.active
-                ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-            }`}
+            to={item.to}
+            className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 relative text-muted-foreground hover:bg-secondary hover:text-foreground"
+            activeClassName="bg-primary text-primary-foreground shadow-md shadow-primary/25"
           >
-            <div
-              className={`flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-200 ${
-                item.active
-                  ? "bg-primary-foreground/15"
-                  : "bg-transparent group-hover:bg-primary/10"
-              }`}
-            >
+            <div className="flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-200 group-hover:bg-primary/10">
               <item.icon className="h-[18px] w-[18px]" />
             </div>
+
             <span className="flex-1 text-left">{item.label}</span>
-            {item.active && (
-              <ChevronRight className="h-4 w-4 opacity-70" />
-            )}
-            {!item.active && (
-              <ChevronRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
-            )}
-          </button>
-        ))}
+
+            <ChevronRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
+          </NavLink>
+))}
 
         <div className="pt-6" />
         <Separator className="mx-2 w-auto mb-4" />
@@ -84,16 +73,20 @@ const DashboardSidebar = () => {
         </p>
 
         {toolItems.map((item) => (
-          <button
+          <NavLink
             key={item.label}
-            className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-all duration-200"
+            to={item.to}
+            className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 relative text-muted-foreground hover:bg-secondary hover:text-foreground"
+            activeClassName="bg-primary text-primary-foreground shadow-md shadow-primary/25"
           >
-            <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-transparent group-hover:bg-primary/10 transition-all duration-200">
+            <div className="flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-200 group-hover:bg-primary/10">
               <item.icon className="h-[18px] w-[18px]" />
             </div>
+
             <span className="flex-1 text-left">{item.label}</span>
+
             <ChevronRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
-          </button>
+          </NavLink>
         ))}
       </nav>
 

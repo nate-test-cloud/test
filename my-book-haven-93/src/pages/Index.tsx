@@ -27,6 +27,7 @@ const books = [
 ];
 
 const Index = () => {
+  /* Check Login Cookie */
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 

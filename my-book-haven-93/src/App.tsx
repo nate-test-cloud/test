@@ -8,6 +8,11 @@ import SignUp from "./pages/SignUp.tsx";
 import ForgotPass from "./pages/ForgotPass.tsx";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import OnlineRead from "./pages/OnlineRead.tsx";
+import Purchase from "./pages/Purchase.tsx";
+import Issued from "./pages/Issued.tsx";
+import Settings from "./pages/Settings.tsx";
+import ReturnDeadline from "./pages/ReturnDeadline.tsx";
 
 //Start here
 const queryClient = new QueryClient();
@@ -24,6 +29,11 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPass />} />
+          <Route path="/return-deadline" element={<ReturnDeadline />} />
+          <Route path="/online-read" element={<OnlineRead />} />
+          <Route path="/purchase" element={<Purchase />} />
+          <Route path="/issued" element={<Issued />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
