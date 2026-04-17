@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Navigate } from "react-router-dom";
 import Login from "./pages/Login.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import ForgotPass from "./pages/ForgotPass.tsx";
@@ -13,6 +14,7 @@ import Purchase from "./pages/Purchase.tsx";
 import Issued from "./pages/Issued.tsx";
 import Settings from "./pages/Settings.tsx";
 import ReturnDeadline from "./pages/ReturnDeadline.tsx";
+import Notifications from "./pages/Notifications.tsx";
 
 //Start here
 const queryClient = new QueryClient();
@@ -25,6 +27,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* ALL ROUTES TO APPLICATION */}
+          <Route path="/" element={<Navigate to="/index" replace />} />
           <Route path="/index" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
@@ -34,6 +37,7 @@ const App = () => (
           <Route path="/purchase" element={<Purchase />} />
           <Route path="/issued" element={<Issued />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

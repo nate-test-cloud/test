@@ -4,9 +4,9 @@ import { useEffect,useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const bookContent = [
-  "It was a bright cold day in April, and the clocks were striking thirteen.",
-  "Winston Smith, his chin nuzzled into his breast...",
-  "The hallway smelt of boiled cabbage and old rag mats...",
+  "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.lorem1000 ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "lorem20000 ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "lorem30000 ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
 ];
 
 export default function OnlineRead() {

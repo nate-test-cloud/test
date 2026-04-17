@@ -9,6 +9,7 @@ const books = [
 ];
 
 export default function ReturnDeadline() {
+  /* Auth check */
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
