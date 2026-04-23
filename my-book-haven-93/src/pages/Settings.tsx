@@ -4,39 +4,46 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
-  /* Check Login Cookie */
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const verifyUser = async () => {
+    const fetchData = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/v1/verify", {
           method: "GET",
-          credentials: "include", // 🔥 required for cookies
+          credentials: "include",
         });
 
         if (!res.ok) {
           navigate("/login");
-        } else {
-          setLoading(false);
+          return;
         }
+
+        const profileRes = await fetch("http://localhost:5000/api/v1/profile", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (profileRes.ok) {
+          const userData = await profileRes.json();
+          setUser(userData);
+          setForm({
+            name: userData.name || "",
+            email: userData.email || "",
+            password: "",
+          });
+        }
+
+        setLoading(false);
       } catch {
         navigate("/login");
       }
     };
 
-    verifyUser();
+    fetchData();
   }, []);
-
-  // 🔥 Prevent render until verified
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Checking authentication...</p>
-      </div>
-    );
-  }
 
   const [form, setForm] = useState({
     name: "",
@@ -50,7 +57,7 @@ export default function Settings() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.name || !form.email) {
@@ -58,8 +65,35 @@ export default function Settings() {
       return;
     }
 
-    setMessage("Settings updated successfully!");
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(form),
+      });
+
+      if (res.ok) {
+        setMessage("Settings updated successfully!");
+        setTimeout(() => setMessage(""), 3000);
+      } else {
+        const data = await res.json();
+        setMessage(data.message || "Error updating profile");
+      }
+    } catch (error) {
+      setMessage("Error updating profile");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Checking authentication...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -72,7 +106,7 @@ export default function Settings() {
 
           {/* Profile Card */}
           <div className="bg-white p-6 rounded-xl shadow space-y-5">
-            
+
             {/* Name */}
             <div>
               <label className="block text-sm text-muted-foreground mb-1">
@@ -106,7 +140,7 @@ export default function Settings() {
             {/* Password */}
             <div>
               <label className="block text-sm text-muted-foreground mb-1">
-                New Password
+                New Password (leave empty to keep current)
               </label>
               <input
                 type="password"
@@ -120,7 +154,9 @@ export default function Settings() {
 
             {/* Message */}
             {message && (
-              <p className="text-sm text-green-600">{message}</p>
+              <p className={`text-sm ${message.includes("successfully") ? "text-green-600" : "text-red-600"}`}>
+                {message}
+              </p>
             )}
 
             {/* Button */}
@@ -132,14 +168,15 @@ export default function Settings() {
             </button>
           </div>
 
-          {/* Extra Section */}
-          <div className="mt-8 bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-semibold mb-3">Account Actions</h2>
-
-            <button className="text-red-500 hover:underline text-sm">
-              Delete Account
-            </button>
-          </div>
+          {/* Account Info */}
+          {user && (
+            <div className="mt-8 bg-white p-6 rounded-xl shadow">
+              <h2 className="text-lg font-semibold mb-3">Account Information</h2>
+              <p className="text-sm text-muted-foreground">
+                Member since: {new Date(user.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          )}
         </main>
       </div>
     </div>

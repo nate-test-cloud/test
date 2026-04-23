@@ -6,28 +6,8 @@ import TopSearchBar from "@/components/TopSearchBar";
 import BookCard from "@/components/BookCard";
 import bookstoreBanner from "@/assets/bookstore-banner.jpg";
 
-import bookGatsby from "@/assets/book-gatsby.jpg";
-import book1984 from "@/assets/book-1984.jpg";
-import bookMockingbird from "@/assets/book-mockingbird.jpg";
-import bookPride from "@/assets/book-pride.jpg";
-import bookHobbit from "@/assets/book-hobbit.jpg";
-import bookDune from "@/assets/book-dune.jpg";
-import bookAlchemist from "@/assets/book-alchemist.jpg";
-import bookBrave from "@/assets/book-brave.jpg";
-
-const books = [
-  { cover: bookGatsby, title: "The Great Gatsby", author: "F. Scott Fitzgerald", rating: 4 },
-  { cover: book1984, title: "1984", author: "George Orwell", rating: 5 },
-  { cover: bookMockingbird, title: "To Kill a Mockingbird", author: "Harper Lee", rating: 5 },
-  { cover: bookPride, title: "Pride and Prejudice", author: "Jane Austen", rating: 4 },
-  { cover: bookHobbit, title: "The Hobbit", author: "J.R.R. Tolkien", rating: 5 },
-  { cover: bookDune, title: "Dune", author: "Frank Herbert", rating: 4 },
-  { cover: bookAlchemist, title: "The Alchemist", author: "Paulo Coelho", rating: 4 },
-  { cover: bookBrave, title: "Brave New World", author: "Aldous Huxley", rating: 3 },
-];
-
 const Index = () => {
-  /* Check Login Cookie */
+  const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -36,14 +16,26 @@ const Index = () => {
       try {
         const res = await fetch("http://localhost:5000/api/v1/verify", {
           method: "GET",
-          credentials: "include", // 🔥 required for cookies
+          credentials: "include",
         });
 
         if (!res.ok) {
           navigate("/login");
-        } else {
-          setLoading(false);
+          return;
         }
+
+        // Fetch books
+        const booksRes = await fetch("http://localhost:5000/api/v1/books", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (booksRes.ok) {
+          const booksData = await booksRes.json();
+          setBooks(booksData);
+        }
+
+        setLoading(false);
       } catch {
         navigate("/login");
       }
@@ -52,7 +44,7 @@ const Index = () => {
     verifyUser();
   }, []);
 
-  // 🔥 Prevent render until verified
+  // Prevent render until verified
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -80,7 +72,7 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
             {books.map((book) => (
-              <BookCard key={book.title} {...book} />
+              <BookCard key={book.id} {...book} />
             ))}
           </div>
         </main>

@@ -1,13 +1,59 @@
-import { Star, BookmarkPlus } from "lucide-react";
+import { Star, BookmarkPlus, BookOpen, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface BookCardProps {
+  id: number;
   cover: string;
   title: string;
   author: string;
   rating: number;
+  price: number;
+  available_copies: number;
 }
 
-const BookCard = ({ cover, title, author, rating }: BookCardProps) => {
+const BookCard = ({ id, cover, title, author, rating, price, available_copies }: BookCardProps) => {
+  const navigate = useNavigate();
+
+  const handleIssue = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/v1/books/${id}/issue`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        alert("Book issued successfully!");
+        // Refetch books to update available copies
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        alert(data.message);
+      }
+    } catch (error) {
+      alert("Error issuing book");
+    }
+  };
+
+  const handlePurchase = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/v1/books/${id}/purchase`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        alert("Book purchased successfully!");
+        // Reload to update the UI
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        alert(data.message);
+      }
+    } catch (error) {
+      alert("Error purchasing book");
+    }
+  };
+
   return (
     <div className="group bg-card rounded-2xl overflow-hidden border border-border/40 cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-primary/8 hover:border-primary/20 hover:-translate-y-2">
       <div className="aspect-[2/3] overflow-hidden relative">
@@ -19,16 +65,35 @@ const BookCard = ({ cover, title, author, rating }: BookCardProps) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
 
-        {/* Bookmark button */}
-        <button className="absolute top-3 right-3 h-8 w-8 rounded-lg bg-card/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-400 hover:bg-primary hover:text-primary-foreground text-muted-foreground shadow-lg">
-          <BookmarkPlus className="h-4 w-4" />
-        </button>
+        {/* Action buttons */}
+        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-400">
+          {available_copies > 0 ? (
+            <button
+              onClick={handleIssue}
+              className="h-8 w-8 rounded-lg bg-card/80 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-primary-foreground text-muted-foreground shadow-lg"
+              title="Issue Book"
+            >
+              <BookOpen className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              onClick={handlePurchase}
+              className="h-8 w-8 rounded-lg bg-card/80 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-primary-foreground text-muted-foreground shadow-lg"
+              title="Purchase Book"
+            >
+              <ShoppingCart className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
         {/* View details label */}
         <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-75">
-          <span className="inline-block px-3.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold shadow-lg shadow-primary/30 tracking-wide">
+          <button
+            onClick={() => navigate(`/book-details/${id}`)}
+            className="w-full inline-block px-3.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold shadow-lg shadow-primary/30 tracking-wide hover:bg-primary/90 transition"
+          >
             View Details
-          </span>
+          </button>
         </div>
       </div>
       <div className="p-4 space-y-1.5 transition-all duration-300 group-hover:bg-primary/[0.03]">
@@ -50,6 +115,10 @@ const BookCard = ({ cover, title, author, rating }: BookCardProps) => {
           ))}
           <span className="text-[11px] text-muted-foreground ml-1.5 font-medium">{rating}.0</span>
         </div>
+        <p className="text-sm font-medium text-primary">₹{price}</p>
+        <p className="text-xs text-muted-foreground">
+          {available_copies > 0 ? `${available_copies} available` : "Out of stock"}
+        </p>
       </div>
     </div>
   );

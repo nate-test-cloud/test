@@ -1,0 +1,228 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Test User",
+      "email": "test@gmail.com",
+      "password": "$2b$10$P6GYYZeUwWu5krH4dydNZeGyNcCJ8PXzDgydtrZ8NBe7ImAIY1sqW",
+      "created_at": "2026-04-23T06:07:35.663Z"
+    }
+  ],
+  "books": [
+    {
+      "id": 1,
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "cover": "/images/the-great-gatsby.jpg",
+      "description": "A classic American novel set in the Jazz Age.",
+      "price": 299,
+      "available_copies": 2,
+      "total_copies": 5,
+      "rating": 4,
+      "genre": "Fiction",
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 2,
+      "title": "1984",
+      "author": "George Orwell",
+      "cover": "/images/1984.jpg",
+      "description": "A dystopian social science fiction novel.",
+      "price": 349,
+      "available_copies": 2,
+      "total_copies": 5,
+      "rating": 5,
+      "genre": "Dystopian",
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 3,
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "cover": "/images/to-kill-mockingbird.jpg",
+      "description": "A novel about racial injustice and childhood.",
+      "price": 399,
+      "available_copies": 4,
+      "total_copies": 4,
+      "rating": 5,
+      "genre": "Fiction",
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 4,
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen",
+      "cover": "/images/pride-and-prejudice.jpg",
+      "description": "A romantic novel of manners.",
+      "price": 249,
+      "available_copies": 7,
+      "total_copies": 6,
+      "rating": 4,
+      "genre": "Romance",
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 5,
+      "title": "The Hobbit",
+      "author": "J.R.R. Tolkien",
+      "cover": "/images/the-hobbit.jpg",
+      "description": "A fantasy adventure novel.",
+      "price": 449,
+      "available_copies": 3,
+      "total_copies": 5,
+      "rating": 5,
+      "genre": "Fantasy",
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 6,
+      "title": "Dune",
+      "author": "Frank Herbert",
+      "cover": "/images/dune.jpg",
+      "description": "A science fiction epic.",
+      "price": 499,
+      "available_copies": 1,
+      "total_copies": 3,
+      "rating": 4,
+      "genre": "Science Fiction",
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 7,
+      "title": "The Alchemist",
+      "author": "Paulo Coelho",
+      "cover": "/images/the-alchemist.jpg",
+      "description": "A philosophical novel about following dreams.",
+      "price": 299,
+      "available_copies": 4,
+      "total_copies": 4,
+      "rating": 4,
+      "genre": "Philosophy",
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 8,
+      "title": "Brave New World",
+      "author": "Aldous Huxley",
+      "cover": "/images/brave-new-world.jpg",
+      "description": "A dystopian novel about a future society.",
+      "price": 349,
+      "available_copies": 3,
+      "total_copies": 3,
+      "rating": 3,
+      "genre": "Dystopian",
+      "created_at": "2026-04-23T06:07:35.664Z"
+    }
+  ],
+  "issued_books": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "book_id": 5,
+      "issue_date": "2026-04-01",
+      "return_date": "2026-04-10",
+      "status": "returned"
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "book_id": 4,
+      "issue_date": "2026-04-05",
+      "return_date": "2026-04-15",
+      "status": "returned"
+    },
+    {
+      "user_id": 1,
+      "book_id": 1,
+      "quantity": 1,
+      "issue_date": "2026-04-23",
+      "return_date": "2026-05-07",
+      "status": "issued",
+      "id": 3
+    },
+    {
+      "user_id": 1,
+      "book_id": 2,
+      "quantity": 1,
+      "issue_date": "2026-04-23",
+      "return_date": "2026-05-07",
+      "status": "issued",
+      "id": 4
+    }
+  ],
+  "purchases": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "book_id": 2,
+      "purchase_date": "2026-04-23T06:07:35.664Z",
+      "price": 349
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "book_id": 6,
+      "purchase_date": "2026-04-23T06:07:35.664Z",
+      "price": 499
+    },
+    {
+      "user_id": 1,
+      "book_id": 1,
+      "quantity": 1,
+      "price": 299,
+      "purchase_date": "2026-04-23T07:19:16.377Z",
+      "id": 3
+    },
+    {
+      "user_id": 1,
+      "book_id": 1,
+      "quantity": 1,
+      "price": 299,
+      "purchase_date": "2026-04-23T07:20:09.887Z",
+      "id": 4
+    },
+    {
+      "user_id": 1,
+      "book_id": 1,
+      "quantity": 1,
+      "price": 299,
+      "purchase_date": "2026-04-23T07:29:32.344Z",
+      "id": 5
+    },
+    {
+      "user_id": 1,
+      "book_id": 2,
+      "quantity": 1,
+      "price": 349,
+      "purchase_date": "2026-04-23T07:37:53.387Z",
+      "id": 6
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "message": "Your book '1984' is due tomorrow.",
+      "type": "warning",
+      "read": false,
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "message": "New book 'Dune' is now available.",
+      "type": "info",
+      "read": false,
+      "created_at": "2026-04-23T06:07:35.664Z"
+    },
+    {
+      "id": 3,
+      "user_id": 1,
+      "message": "Payment successful for 'The Hobbit'.",
+      "type": "success",
+      "read": false,
+      "created_at": "2026-04-23T06:07:35.664Z"
+    }
+  ],
+  "carts": []
+}

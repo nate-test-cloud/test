@@ -8,9 +8,11 @@ import {
   Settings,
   LogOut,
   ChevronRight,
+  Bell,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { NavLink } from "@/components/NavLink";
+import { useNavigate } from "react-router-dom";
 
 const mainItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/index" },
@@ -18,14 +20,29 @@ const mainItems = [
   { icon: Clock, label: "Return Deadlines", to: "/return-deadline" },
   { icon: Monitor, label: "Online Reading", to: "/online-read" },
   { icon: ShoppingCart, label: "My Purchases", to: "/purchase" },
+  { icon: Bell, label: "Notifications", to: "/notifications" },
 ];
 
 const toolItems = [
   { icon: Settings, label: "Settings", to: "/settings" },
-  { icon: LogOut, label: "Logout", to: "/logout" },
 ];
 
 const DashboardSidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:5000/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      navigate("/login");
+    }
+  };
+
   return (
     <aside className="fixed left-0 top-0 h-screen w-[272px] bg-card border-r border-border/60 flex flex-col z-30 max-lg:hidden">
       {/* Logo */}
@@ -88,6 +105,20 @@ const DashboardSidebar = () => {
             <ChevronRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
           </NavLink>
         ))}
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 relative text-muted-foreground hover:bg-secondary hover:text-foreground mt-2"
+        >
+          <div className="flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-200 group-hover:bg-primary/10">
+            <LogOut className="h-[18px] w-[18px]" />
+          </div>
+
+          <span className="flex-1 text-left">Logout</span>
+
+          <ChevronRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
+        </button>
       </nav>
 
     </aside>

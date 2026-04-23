@@ -15,6 +15,8 @@ import Issued from "./pages/Issued.tsx";
 import Settings from "./pages/Settings.tsx";
 import ReturnDeadline from "./pages/ReturnDeadline.tsx";
 import Notifications from "./pages/Notifications.tsx";
+import Search from "./pages/Search.tsx";
+import BookDetails from "./pages/BookDetails.tsx";
 
 //Start here
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
           {/* ALL ROUTES TO APPLICATION */}
           <Route path="/" element={<Navigate to="/index" replace />} />
           <Route path="/index" element={<Index />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/book-details/:id" element={<BookDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPass />} />

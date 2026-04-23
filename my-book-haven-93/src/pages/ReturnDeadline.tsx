@@ -3,38 +3,54 @@ import TopSearchBar from "@/components/TopSearchBar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const books = [
-  { title: "1984", due: "2026-04-15", status: "Due Soon" },
-  { title: "Dune", due: "2026-04-01", status: "Overdue" },
-];
-
 export default function ReturnDeadline() {
-  /* Auth check */
+  const [issuedBooks, setIssuedBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const verifyUser = async () => {
+    const fetchData = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/v1/verify", {
           method: "GET",
-          credentials: "include", // 🔥 required for cookies
+          credentials: "include",
         });
 
         if (!res.ok) {
           navigate("/login");
-        } else {
-          setLoading(false);
+          return;
         }
+
+        const issuedRes = await fetch("http://localhost:5000/api/v1/issued", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (issuedRes.ok) {
+          const data = await issuedRes.json();
+          setIssuedBooks(data);
+        }
+
+        setLoading(false);
       } catch {
         navigate("/login");
       }
     };
 
-    verifyUser();
+    fetchData();
   }, []);
 
-  // 🔥 Prevent render until verified
+  const getStatus = (returnDate) => {
+    const today = new Date();
+    const returnDateObj = new Date(returnDate);
+    const diffTime = returnDateObj - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return { status: "Overdue", color: "text-red-500" };
+    if (diffDays <= 3) return { status: "Due Soon", color: "text-yellow-500" };
+    return { status: "Active", color: "text-green-500" };
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -53,24 +69,35 @@ export default function ReturnDeadline() {
           <h1 className="text-2xl font-bold mb-4">Return Deadlines</h1>
 
           <div className="space-y-3">
-            {books.map((book) => (
-              <div
-                key={book.title}
-                className="p-4 bg-white rounded shadow flex justify-between"
-              >
-                <span>{book.title}</span>
-                <span>{book.due}</span>
-                <span
-                  className={
-                    book.status === "Overdue"
-                      ? "text-red-500"
-                      : "text-yellow-500"
-                  }
-                >
-                  {book.status}
-                </span>
-              </div>
-            ))}
+            {issuedBooks.length === 0 ? (
+              <p className="text-muted-foreground">No issued books</p>
+            ) : (
+              issuedBooks.map((book) => {
+                const { status, color } = getStatus(book.return_date);
+                return (
+                  <div
+                    key={book.id}
+                    className="p-4 bg-white rounded shadow flex justify-between items-center gap-4"
+                  >
+                    <img
+                      src={book.cover}
+                      alt={book.title}
+                      className="w-10 h-14 object-cover rounded flex-shrink-0"
+                    />
+                    <div className="flex-grow">
+                      <span className="font-medium">{book.title}</span>
+                      <p className="text-sm text-muted-foreground">by {book.author}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <span className="block text-sm">{book.return_date}</span>
+                      <span className={`text-sm font-medium ${color}`}>
+                        {status}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </main>
       </div>

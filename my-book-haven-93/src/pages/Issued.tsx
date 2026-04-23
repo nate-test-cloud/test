@@ -1,51 +1,52 @@
 import DashboardSidebar from "@/components/DashboardSidebar";
 import TopSearchBar from "@/components/TopSearchBar";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const issuedBooks = [
-  {
-    id: 1,
-    title: "The Hobbit",
-    issueDate: "2026-04-01",
-    returnDate: "2026-04-10",
-  },
-  {
-    id: 2,
-    title: "Pride and Prejudice",
-    issueDate: "2026-04-05",
-    returnDate: "2026-04-15",
-  },
-];
-
 export default function Issued() {
-
-  /* Check Login Cookie */
+  const [issuedBooks, setIssuedBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const fetchIssuedBooks = async () => {
+    try {
+      const purchasesRes = await fetch("http://localhost:5000/api/v1/purchases", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (purchasesRes.ok) {
+        const data = await purchasesRes.json();
+        setIssuedBooks(data);
+      }
+    } catch (error) {
+      console.error("Error fetching purchase history:", error);
+    }
+  };
+
   useEffect(() => {
-    const verifyUser = async () => {
+    const fetchData = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/v1/verify", {
           method: "GET",
-          credentials: "include", // 🔥 required for cookies
+          credentials: "include",
         });
 
         if (!res.ok) {
           navigate("/login");
-        } else {
-          setLoading(false);
+          return;
         }
+
+        await fetchIssuedBooks();
+        setLoading(false);
       } catch {
         navigate("/login");
       }
     };
 
-    verifyUser();
-  }, []);
+    fetchData();
+  }, [navigate]);
 
-  // 🔥 Prevent render until verified
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -62,29 +63,47 @@ export default function Issued() {
         <TopSearchBar />
 
         <main className="p-6">
-          <h1 className="text-2xl font-bold mb-6">Issued Books</h1>
+          <h1 className="text-2xl font-bold mb-6">Purchase History</h1>
+          <p className="text-muted-foreground mb-6">
+            Review the books you have purchased so far.
+          </p>
 
           <div className="space-y-4">
-            {issuedBooks.map((book) => (
-              <div
-                key={book.id}
-                className="bg-white p-4 rounded-xl shadow flex justify-between"
-              >
-                <div>
-                  <h2 className="font-semibold">{book.title}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Issued: {book.issueDate}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Return: {book.returnDate}
-                  </p>
-                </div>
+            {issuedBooks.length === 0 ? (
+              <p className="text-muted-foreground">No purchases yet</p>
+            ) : (
+              issuedBooks.map((book) => (
+                <div
+                  key={book.id}
+                  className="bg-white p-4 rounded-xl shadow flex flex-col md:flex-row justify-between items-start gap-4"
+                >
+                  <div className="flex items-start gap-4 flex-grow">
+                    <img
+                      src={book.cover}
+                      alt={book.title}
+                      className="w-16 h-24 object-cover rounded flex-shrink-0"
+                    />
+                    <div>
+                      <h2 className="font-semibold text-lg">{book.title}</h2>
+                      <p className="text-sm text-muted-foreground">by {book.author}</p>
+                      {book.quantity && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Quantity: {book.quantity}
+                        </p>
+                      )}
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Purchased: {new Date(book.purchase_date).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
 
-                <span className="text-[#926d24] font-medium">
-                  Active
-                </span>
-              </div>
-            ))}
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">Total Paid</p>
+                    <p className="text-xl font-semibold">₹{book.price}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </main>
       </div>
