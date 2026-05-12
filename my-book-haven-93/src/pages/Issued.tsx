@@ -92,7 +92,7 @@ export default function Issued() {
                         </p>
                       )}
                       <p className="text-sm text-muted-foreground mt-1">
-                        Purchased: {new Date(book.purchase_date).toLocaleDateString()}
+                        Purchased: {new Date(book.purchase_date).toLocaleDateString()} at {new Date(book.purchase_date).toLocaleTimeString()}
                       </p>
                     </div>
                   </div>

@@ -161,6 +161,15 @@ export default function Purchase() {
                       <p className="text-sm text-muted-foreground mt-1">
                         Quantity: {item.quantity}
                       </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                          item.purchase_type === "ebook"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-green-100 text-green-700"
+                        }`}>
+                          {item.purchase_type === "ebook" ? "Borrow eBook (14 days)" : "Purchase Physical"}
+                        </span>
+                      </div>
                       <p className="text-sm font-semibold mt-2">
                         ₹{item.price} × {item.quantity} = ₹{item.price * item.quantity}
                       </p>
@@ -185,14 +194,25 @@ export default function Purchase() {
                   {cartItems.map((item) => (
                     <div
                       key={item.id}
-                      className="flex justify-between text-sm"
+                      className="space-y-1"
                     >
-                      <span>
-                        {item.title} × {item.quantity}
-                      </span>
-                      <span className="font-medium">
-                        ₹{item.price * item.quantity}
-                      </span>
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium">
+                          {item.title} × {item.quantity}
+                        </span>
+                        <span className="font-semibold">
+                          ₹{item.price * item.quantity}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xs px-2 py-0.5 rounded ${
+                          item.mode === "online"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-green-100 text-green-700"
+                        }`}>
+                          {item.mode === "online" ? "Borrow" : "Purchase"}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>

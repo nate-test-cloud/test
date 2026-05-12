@@ -9,6 +9,7 @@ export default function BookDetails() {
   const navigate = useNavigate();
   const [book, setBook] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [purchaseMode, setPurchaseMode] = useState("offline");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,6 +50,16 @@ export default function BookDetails() {
   const handleAddToCart = async () => {
     if (!book) return;
 
+    // Check if purchase option is valid for the book type
+    if (book.type === "ebook" && purchaseMode === "offline") {
+      alert("This is an eBook and can only be purchased for online reading");
+      return;
+    }
+    if (book.type === "offline" && purchaseMode === "online") {
+      alert("This offline book cannot be purchased for online reading");
+      return;
+    }
+
     try {
       const res = await fetch("http://localhost:5000/api/v1/cart", {
         method: "POST",
@@ -59,6 +70,7 @@ export default function BookDetails() {
         body: JSON.stringify({
           book_id: book.id,
           quantity,
+          purchase_type: purchaseMode,
         }),
       });
 
@@ -166,10 +178,55 @@ export default function BookDetails() {
 
               {/* Price and Cart Section */}
               <div className="border-t pt-6">
+                {/* Purchase Mode Selection */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-4">Purchase Options</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {book.type === "offline" && (
+                      <div
+                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                          purchaseMode === "offline"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                        onClick={() => setPurchaseMode("offline")}
+                      >
+                        <h4 className="font-semibold mb-2">Physical Book</h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Buy the physical book for offline reading
+                        </p>
+                        <p className="text-xl font-bold text-primary">
+                          ₹{book.offline_price}
+                        </p>
+                      </div>
+                    )}
+                    {book.type === "ebook" && (
+                      <div
+                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                          purchaseMode === "online"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                        onClick={() => setPurchaseMode("online")}
+                      >
+                        <h4 className="font-semibold mb-2">Online Reading</h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Borrow for online reading (14 days return deadline)
+                        </p>
+                        <p className="text-xl font-bold text-primary">
+                          ₹{book.online_price}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="flex items-end gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Price per copy</p>
-                    <p className="text-4xl font-bold text-primary">₹{book.price}</p>
+                    <p className="text-4xl font-bold text-primary">
+                      ₹{purchaseMode === "online" ? book.online_price : book.offline_price}
+                    </p>
                   </div>
 
                   <div>
@@ -214,7 +271,7 @@ export default function BookDetails() {
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Total</p>
                     <p className="text-2xl font-bold">
-                      ₹{book.price * quantity}
+                      ₹{(purchaseMode === "online" ? book.online_price : book.offline_price) * quantity}
                     </p>
                   </div>
                 </div>

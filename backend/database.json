@@ -16,7 +16,7 @@
       "cover": "/images/the-great-gatsby.jpg",
       "description": "A classic American novel set in the Jazz Age.",
       "price": 299,
-      "available_copies": 2,
+      "available_copies": 1,
       "total_copies": 5,
       "rating": 4,
       "genre": "Fiction",
@@ -196,6 +196,15 @@
       "price": 349,
       "purchase_date": "2026-04-23T07:37:53.387Z",
       "id": 6
+    },
+    {
+      "user_id": 1,
+      "book_id": 1,
+      "quantity": 1,
+      "price": 299,
+      "purchase_date": "2026-04-23T10:12:44.183Z",
+      "mode": "offline",
+      "id": 7
     }
   ],
   "notifications": [

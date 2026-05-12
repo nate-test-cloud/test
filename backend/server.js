@@ -204,11 +204,19 @@ app.get("/api/v1/issued", verifyToken, (req, res) => {
     .filter(ib => ib.status === 'issued')
     .map(ib => {
       const book = books.find(b => b.id === ib.book_id);
+      const returnDateObj = new Date(ib.return_date);
+      const today = new Date();
+      const diffTime = returnDateObj - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return {
         ...ib,
         title: book?.title,
         author: book?.author,
-        cover: book?.cover
+        cover: book?.cover,
+        content: book?.content,
+        days_remaining: diffDays,
+        online_price: book?.online_price,
+        offline_price: book?.offline_price
       };
     });
 
@@ -327,8 +335,9 @@ app.get("/api/v1/cart", verifyToken, (req, res) => {
       title: book?.title,
       author: book?.author,
       cover: book?.cover,
-      price: book?.price,
-      available_copies: book?.available_copies
+      price: item.price ?? book?.price,
+      available_copies: book?.available_copies,
+      mode: item.mode || "offline"
     };
   });
 
@@ -339,6 +348,7 @@ app.get("/api/v1/cart", verifyToken, (req, res) => {
 app.post("/api/v1/cart", verifyToken, (req, res) => {
   const bookId = parseInt(req.body.book_id, 10);
   const quantity = parseInt(req.body.quantity, 10) || 1;
+  const mode = req.body.mode === "online" ? "online" : "offline";
   const userId = req.user.id;
 
   if (!bookId) {
@@ -350,14 +360,18 @@ app.post("/api/v1/cart", verifyToken, (req, res) => {
     return res.status(404).json({ message: "Book not found" });
   }
 
-  // Check if book already in cart
-  const existingItem = getCartItem(userId, bookId);
+  const selectedPrice = mode === "online"
+    ? book.online_price ?? book.price
+    : book.offline_price ?? book.price;
+
+  // Check if book already in cart with same mode
+  const existingItem = getCart(userId).find(c => c.book_id === bookId && c.mode === mode);
   if (existingItem) {
     const newQuantity = existingItem.quantity + quantity;
     if (newQuantity > book.available_copies) {
       return res.status(400).json({ message: "Not enough copies available" });
     }
-    const updated = updateCartItem(existingItem.id, { quantity: newQuantity });
+    const updated = updateCartItem(existingItem.id, { quantity: newQuantity, price: selectedPrice });
     return res.json({ message: "Cart updated", item: updated });
   }
 
@@ -369,6 +383,8 @@ app.post("/api/v1/cart", verifyToken, (req, res) => {
     user_id: userId,
     book_id: bookId,
     quantity: quantity || 1,
+    mode,
+    price: selectedPrice,
     added_at: new Date().toISOString()
   });
 
@@ -399,18 +415,25 @@ app.post("/api/v1/cart/checkout", verifyToken, (req, res) => {
   }
 
   try {
-    // Add each cart item as a purchase and issue record
     cartItems.forEach(item => {
       const book = getBookById(item.book_id);
-      if (book && item.quantity <= book.available_copies) {
+      if (!book || item.quantity > book.available_copies) {
+        return;
+      }
+
+      const mode = item.mode === "online" ? "online" : "offline";
+      const price = item.price ?? (mode === "online" ? book.online_price ?? book.price : book.offline_price ?? book.price);
+
+      if (mode === "offline") {
         addPurchase({
           user_id: userId,
           book_id: item.book_id,
           quantity: item.quantity,
-          price: book.price * item.quantity,
-          purchase_date: new Date().toISOString()
+          price: price * item.quantity,
+          purchase_date: new Date().toISOString(),
+          mode
         });
-
+      } else {
         const issueDate = new Date();
         const returnDate = new Date(issueDate);
         returnDate.setDate(returnDate.getDate() + 14);
@@ -421,17 +444,17 @@ app.post("/api/v1/cart/checkout", verifyToken, (req, res) => {
           quantity: item.quantity,
           issue_date: issueDate.toISOString().split("T")[0],
           return_date: returnDate.toISOString().split("T")[0],
-          status: "issued"
+          status: "issued",
+          mode,
+          price: price * item.quantity
         });
-
-        // Update available copies
-        updateBook(item.book_id, { available_copies: book.available_copies - item.quantity });
       }
+
+      updateBook(item.book_id, { available_copies: book.available_copies - item.quantity });
     });
 
-    // Clear the cart
     clearCart(userId);
-    
+
     res.json({ message: "Purchase successful" });
   } catch (error) {
     res.status(500).json({ message: "Error processing purchase" });
